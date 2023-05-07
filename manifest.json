@@ -1,8 +1,9 @@
 {
     "name": "Pokemon Weakness",
     "version": "2023.05.07",
+    "author": "Claudia SA",
     "manifest_version": 3,
-    "description": "Find the weaknesses of selected Pokemon",
+    "description": "Lazy overload",
     "permissions": ["activeTab"],
     "host_permissions": ["<all_urls>"],
     "content_scripts": [
@@ -13,9 +14,9 @@
       }
     ],
     "action": {
-      "default_icon": 
-        "icon.png"
-      
+      "default_icon": "icon.png",
+      "default_popup": "index.html",
+      "default_title": "Pokemon Weaknesses"
   }
 }
   

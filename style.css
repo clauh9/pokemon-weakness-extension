@@ -12,3 +12,7 @@
 	pointer-events: none;
 	user-select: none;
 }
+
+.menu {
+	width: 300px;
+}
