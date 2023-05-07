@@ -1,6 +1,6 @@
 {
     "name": "Pokemon Weakness",
-    "version": "0.0.0.1",
+    "version": "2023.05.07",
     "manifest_version": 3,
     "description": "Find the weaknesses of selected Pokemon",
     "permissions": ["activeTab"],
@@ -11,6 +11,11 @@
         "js": ["content.js"],
         "css": ["style.css"]
       }
-    ]
+    ],
+    "action": {
+      "default_icon": 
+        "icon.png"
+      
   }
+}
   
