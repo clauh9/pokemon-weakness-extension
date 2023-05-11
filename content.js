@@ -23,7 +23,7 @@ async function getPokemonWeakness(pokemonName) {
     const fetchWeaknesses = async () => {
         isLoading = true;
         try {
-            //first get that pkemon types
+            //first get that pokemon types
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
             const data = await response.json();
 
@@ -50,24 +50,54 @@ async function getPokemonWeakness(pokemonName) {
             const sortedMultipliers = Object.entries(multipliers) //converts the multipliers object into an array of key-value pairs, where each key-value pair is represented as an array with two elements: ex{ground: 4}
                 .filter(([type, multiplier]) => multiplier > 1) //applies a filter to the array created in the previous step, keeping only the key-value pairs where the value is greater than 1.
                 .sort((a, b) => b[1] - a[1]); //sorts the filtered array in descending order of the values of the key-value pairs
-            //contains only the types of the weaknesses, which were sorted by their multipliers in descending order
-            weaknesses = sortedMultipliers.map(([type, _]) => type); //is the function being applied to each element. It uses destructuring to extract the first element (type) of each key-value pair, discarding the second element (multiplier).
+
+            //modify weaknesses dictionary to include both type and multiplier
+            weaknesses = sortedMultipliers.map(([type, multiplier]) => ({ type, multiplier }));
+            //ex: balbasaur => flying x2 | fire x2 | ice x2 | psychic x2
+            let selection = weaknesses.map(({ type, multiplier }) => `${type} x${multiplier}`).join(" | ");
 
             //------------------ Bubble ---------- 
-            var selection = weaknesses.join(" | ");
-            var existingSpeechBubble = document.querySelector('.popup');
+            let existingSpeechBubble = document.querySelector('.popup');
             if (existingSpeechBubble) {
                 existingSpeechBubble.remove();
             }
-            var speechBubble = document.createElement('div');
+            let speechBubble = document.createElement('div');
             speechBubble.setAttribute('class', 'popup');
             speechBubble.innerHTML = selection.toString();
-            window.getSelection().getRangeAt(0).insertNode(speechBubble); //inserts a new DOM node called speechBubble at the beginning of the selected range
+
+            // Create an array of weakness type/multiplier pairs
+            const weaknessPairs = Object.entries(multipliers)
+                .filter(([type, multiplier]) => multiplier > 1)
+                .sort((a, b) => b[1] - a[1]);
+
+            // Create an array of span elements based on the weakness pairs
+            const weaknessSpans = weaknessPairs.map(([type, multiplier]) =>
+                createWeaknessesSpan(type, multiplier)
+            );
+
+            // Join the span elements into a string with a separator of '|'
+            const weaknessesString = weaknessSpans.join(' | ');
+
+            // Create a containing span element with the class 'weaknesses'
+            const weaknessesSpan = document.createElement('span');
+            weaknessesSpan.classList.add('weaknesses');
+
+            // Add the weakness span elements to the containing span element
+            weaknessSpans.forEach(span => weaknessesSpan.appendChild(span));
+
+            // Insert the containing span element into the DOM
+            window.getSelection().getRangeAt(0).insertNode(weaknessesSpan);
+
+
+
+
+            // window.getSelection().getRangeAt(0).insertNode(speechBubble); //inserts a new DOM node called speechBubble at the beginning of the selected range
+
 
             // Add a click event listener to the document to remove the speech bubble
             document.addEventListener('click', function () {
-                if (speechBubble.parentNode) {
-                    speechBubble.parentNode.removeChild(speechBubble);
+                if (weaknessesSpan.parentNode) {
+                    weaknessesSpan.parentNode.removeChild(weaknessesSpan);
                 }
             }, { once: true }); //runs only once, it will automatically be removed after it has been executed once
         } catch (error) {
@@ -81,4 +111,12 @@ async function getPokemonWeakness(pokemonName) {
     }
 
     return { weaknesses };
+}
+
+
+function createWeaknessesSpan(type, multiplier) {
+    const span = document.createElement('span');
+    span.classList.add('weakness-type', type);
+    span.innerText = `${type} ${multiplier}x`;
+    return span;
 }
